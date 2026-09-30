@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cyber Shield - Central Command</title>
+    <!-- Include premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- ChartJS for telemetry rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <svg class="shield-icon" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            AI CYBER SHIELD
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div id="account-info-container" style="display: none; align-items: center; gap: 0.75rem; font-family: 'Outfit', sans-serif;">
+                <div class="avatar" id="account-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #0078d4; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">SO</div>
+                <div style="font-size: 0.8rem; text-align: left; line-height: 1.2;">
+                    <div id="account-name" style="font-weight: 600; color: #fff; font-size: 0.85rem;">Security Officer</div>
+                    <div id="account-email" style="color: #10b981; font-weight: 600; font-size: 0.75rem;">🛡️ Protected Microsoft Account</div>
+                </div>
+                <button class="btn" id="btn-signout" onclick="logout()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ff8a8a; padding: 0.3rem 0.65rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; transition: all 0.2s;">Sign Out</button>
+            </div>
+            <div class="status-badge" id="system-status">
+                <div class="status-dot"></div>
+                MONITORING ACTIVATED
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- Threat Alert Banner -->
+        <div class="alert-banner" id="threat-alert">
+            <div class="alert-info-box">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <div>
+                    <div class="alert-title" id="alert-type">CRITICAL THREAT DETECTED</div>
+                    <div class="alert-desc" id="alert-details">DDoS Attack simulation pattern matched. Active connections count is critical.</div>
+                </div>
+            </div>
+            <div class="alert-actions" style="display: flex; gap: 0.75rem;">
+                <button class="btn btn-active" id="btn-view-defense" onclick="showDefenseModal()" style="display: none; background: rgba(59, 130, 246, 0.2); border-color: var(--primary);">View Defenses</button>
+                <button class="btn btn-danger" onclick="dismissAlert()">Acknowledge</button>
+            </div>
+        </div>
+
+        <!-- Metric widgets row -->
+        <div class="metric-row">
+            <div class="metric-card">
+                <div class="metric-header">Active Sockets</div>
+                <div class="metric-value" id="val-connections">0</div>
+                <div class="metric-trend" style="color: var(--success);">✔ Stable Connections</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">Traffic Speed</div>
+                <div class="metric-value" id="val-traffic">0 KB/s</div>
+                <div class="metric-trend" style="color: var(--primary);">⇅ Real-time Rx/Tx</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">File Mod Rate</div>
+                <div class="metric-value" id="val-file-rate">0 / min</div>
+                <div class="metric-trend" id="val-file-status" style="color: var(--success);">✔ Idle State</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">System Anomaly Score</div>
+                <div class="metric-value" id="val-anomaly">0.0%</div>
+                <div class="metric-trend" id="val-anomaly-status" style="color: var(--success);">✔ Safe baseline</div>
+            </div>
+        </div>
+
+        <div class="card protection-area">
+            <div class="card-title">Predictive Protection</div>
+            <div class="protection-grid">
+                <div>
+                    <div class="metric-header">Upcoming Threat Risk</div>
+                    <div class="protection-score" id="val-protection-risk">0.0%</div>
+                    <div class="metric-trend" id="val-protection-level" style="color: var(--success);">NORMAL</div>
+                </div>
+                <div>
+                    <div class="metric-header">Critical Data Snapshot</div>
+                    <div class="snapshot-value" id="val-snapshot-count">0 files</div>
+                    <div class="metric-trend" id="val-snapshot-status">Waiting for risk signal</div>
+                </div>
+                <div>
+                    <div class="metric-header">Protection Mode</div>
+                    <div class="snapshot-value" id="val-protection-mode">Monitoring</div>
+                    <div class="metric-trend" id="val-protection-action">No guard action active</div>
+                </div>
+                <div class="signal-list" id="protection-signals">
+                    <div class="signal-item">No elevated signals</div>
+                </div>
+                <div class="signal-list" id="protection-actions">
+                    <div class="signal-item">No protection actions yet</div>
+                </div>
+            </div>
+
+            <!-- Vault Details (hidden by default, shown on isolation trigger) -->
+            <div class="vault-details-panel" id="vault-details" style="display: none; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                <h5>🔒 FAIL-SAFE ISOLATED SENSITIVE INFORMATION</h5>
+                <div class="vault-manifest-list" id="vault-files">
+                    <!-- Dynamic isolated files lists -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 5-Layer Firewall Active Rules Card -->
+        <div class="card firewall-area" style="grid-column: span 12;">
+            <div class="card-title">
+                <span>🛡️ FIVE-LAYER COGNITIVE FIREWALL</span>
+                <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: var(--primary);">
+                    COGNITIVE SHIELD ACTIVE
+                </span>
+            </div>
+            <div class="firewall-grid">
+                <!-- Layer 1: Network Filter -->
+                <div class="firewall-layer-card" id="layer-ip">
+                    <div class="layer-badge">L1</div>
+                    <div class="layer-title">Network IP Filter</div>
+                    <div class="layer-metric" id="fw-ips-blocked">0 blocked IPs</div>
+                    <div class="layer-details" id="fw-ips-list">No IPs blocked</div>
+                </div>
+                <!-- Layer 2: Transport/Port Guard -->
+                <div class="firewall-layer-card" id="layer-port">
+                    <div class="layer-badge">L2</div>
+                    <div class="layer-title">Transport Port Guard</div>
+                    <div class="layer-metric" id="fw-ports-blocked">0 blocked ports</div>
+                    <div class="layer-details" id="fw-ports-list">No ports blocked</div>
+                </div>
+                <!-- Layer 3: Application Inspector -->
+                <div class="firewall-layer-card" id="layer-app">
+                    <div class="layer-badge">L3</div>
+                    <div class="layer-title">Application Inspector</div>
+                    <div class="layer-metric" id="fw-payloads-scanned">0 payloads scanned</div>
+                    <div class="layer-details" id="fw-payloads-status">No anomalies detected</div>
+                </div>
+                <!-- Layer 4: Process Binding Guard -->
+                <div class="firewall-layer-card" id="layer-process">
+                    <div class="layer-badge">L4</div>
+                    <div class="layer-title">Process Binding Guard</div>
+                    <div class="layer-metric" id="fw-processes-verified">0 processes verified</div>
+                    <div class="layer-details" id="fw-processes-status">All bindings safe</div>
+                </div>
+                <!-- Layer 5: Behavioral Rate Limiter -->
+                <div class="firewall-layer-card" id="layer-behavioral">
+                    <div class="layer-badge">L5</div>
+                    <div class="layer-title">Behavioral Rate Limiter</div>
+                    <div class="layer-metric" id="fw-rate-violations">0 rate violations</div>
+                    <div class="layer-details" id="fw-rate-status">Traffic within baseline</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Area -->
+        <div class="card main-chart-area">
+            <div class="card-title">Network Telemetry Rate</div>
+            <div style="height: 300px; position: relative;">
+                <canvas id="trafficChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Logs activity timeline -->
+        <div class="card logs-area">
+            <div class="card-title">Log Audit Timeline</div>
+            <div class="log-list" id="audit-logs">
+                <div class="log-item">
+                    <span class="log-timestamp">00:00:00</span>
+                    <span class="log-msg">Audit timeline loaded. Waiting for telemetry logs stream...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Process Telemetry -->
+        <div class="card process-area">
+            <div class="card-title">Top Active Processes</div>
+            <div style="max-height: 350px; overflow-y: auto;">
+                <table class="proc-table">
+                    <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>Name</th>
+                            <th>CPU %</th>
+                            <th>RAM %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="process-list">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary);">Querying active processes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Active Defense Popup Modal Window -->
+    <div class="modal-overlay" id="defense-modal-overlay">
+        <div class="defense-modal">
+            <div class="defense-modal-header">
+                <div class="defense-modal-title">
+                    <svg class="shield-pulse-icon" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="var(--danger)"/>
+                    </svg>
+                    ACTIVE SHIELD RESPONSE INITIATED
+                </div>
+                <span class="defense-modal-close" onclick="closeDefenseModal()">&times;</span>
+            </div>
+            <div class="defense-modal-body">
+                <div class="defense-status-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Attack Type</span>
+                        <span class="summary-value" id="modal-threat-type" style="color: var(--danger); font-weight: 700;">None</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Severity & Confidence</span>
+                        <span class="summary-value" id="modal-confidence">0%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Response Mode</span>
+                        <span class="summary-value" id="modal-defense-mode" style="color: var(--warning); font-weight: 700;">Monitoring</span>
+                    </div>
+                </div>
+                
+                <div class="defending-operations-section">
+                    <div class="defending-section-title">Defending Operations Executed</div>
+                    <div class="operations-timeline" id="modal-operations-list">
+                        <div class="operation-item">
+                            <div class="op-status status-ready">WAITING</div>
+                            <div class="op-desc">Analyzing threat signatures...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="defense-modal-footer">
+                <button class="btn btn-active" onclick="closeDefenseModal()">Acknowledge & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Microsoft Account Authentication Overlay -->
+    <div class="modal-overlay" id="auth-modal-overlay" style="display: flex; opacity: 1; z-index: 9999; background: #07090e;">
+        <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 3rem; width: 460px; box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); border-top: 5px solid #00a4ef; text-align: left; font-family: 'Outfit', sans-serif;">
+            <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;">
+                <!-- Microsoft Logo Grid -->
+                <svg width="32" height="32" viewBox="0 0 23 23">
+                    <path fill="#f25022" d="M0 0h11v11H0z"/>
+                    <path fill="#7fba00" d="M12 0h11v11H12z"/>
+                    <path fill="#00a4ef" d="M0 12h11v11H0z"/>
+                    <path fill="#ffb900" d="M12 12h11v11H12z"/>
+                </svg>
+                <span style="font-size: 1.6rem; font-weight: 700; color: #ffffff;">Microsoft</span>
+            </div>
+            
+            <div id="auth-main-panel">
+                <h2 style="font-size: 1.6rem; font-weight: 700; margin: 0 0 0.5rem 0; color: #ffffff;">Sign in</h2>
+                <p style="color: #9ca3af; font-size: 0.95rem; margin: 0 0 1.5rem 0;">to access AI Cyber Shield Central Command</p>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Login Method</label>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem;">
+                        <button class="btn btn-active" id="btn-method-demo" onclick="setAuthMethod('demo')" style="flex: 1; padding: 0.5rem 0.25rem; font-size: 0.8rem;">Simulated Login</button>
+                        <button class="btn" id="btn-method-real" onclick="setAuthMethod('real')" style="flex: 1; padding: 0.5rem 0.25rem; font-size: 0.8rem; border-color: rgba(255,255,255,0.08);">Device Flow</button>
+                        <button class="btn" id="btn-method-pass" onclick="setAuthMethod('pass')" style="flex: 1; padding: 0.5rem 0.25rem; font-size: 0.8rem; border-color: rgba(255,255,255,0.08);">Password Login</button>
+                    </div>
+                </div>
+                
+                <!-- Password Login Form -->
+                <div id="auth-pass-form" style="display: none;">
+                    <div style="margin-bottom: 1.25rem;">
+                        <label for="auth-pass-email" style="display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 0.5rem;">Microsoft Account Email</label>
+                        <input type="email" id="auth-pass-email" placeholder="username@outlook.com" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="auth-pass-password" style="display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 0.5rem;">Password</label>
+                        <input type="password" id="auth-pass-password" placeholder="Enter your password" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none;">
+                    </div>
+                    <button class="btn btn-active" onclick="submitPasswordLogin()" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 600; background: #0078d4; border-color: #0086f0; margin-bottom: 1rem;">Sign In with Microsoft</button>
+                </div>
+                
+                <!-- Demo Login Form -->
+                <div id="auth-demo-form">
+                    <div style="margin-bottom: 1.25rem;">
+                        <label for="auth-email" style="display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 0.5rem;">Microsoft Email Address</label>
+                        <input type="email" id="auth-email" value="security.officer@outlook.com" placeholder="email@outlook.com" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="auth-name" style="display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 0.5rem;">Display Name</label>
+                        <input type="text" id="auth-name" value="Security Officer" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none;">
+                    </div>
+                    <button class="btn btn-active" onclick="submitDemoLogin()" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 600; background: #0078d4; border-color: #0086f0;">Sign In & Start Protection</button>
+                </div>
+                
+                <!-- Real MSAL Device Flow Container -->
+                <div id="auth-real-form" style="display: none;">
+                    <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.5;">Click below to generate a device code. You will need to enter this code on the Microsoft device login website.</p>
+                    <button class="btn btn-active" id="btn-generate-code" onclick="startMsalDeviceFlow()" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 600; background: #0078d4; border-color: #0086f0; margin-bottom: 1rem;">Generate Login Code</button>
+                    
+                    <div id="auth-code-display-panel" style="display: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; margin-top: 1rem;">
+                        <div style="background: rgba(0, 120, 212, 0.15); border: 1px solid rgba(0, 120, 212, 0.3); border-radius: 8px; padding: 1rem; text-align: center; margin-bottom: 1.25rem;">
+                            <span style="display: block; color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.25rem;">Microsoft Verification Code</span>
+                            <span id="auth-device-code" style="font-size: 1.8rem; font-weight: 800; color: #60a5fa; letter-spacing: 1px;">XXXX-XXXX</span>
+                        </div>
+                        <ol style="color: #cbd5e1; font-size: 0.85rem; padding-left: 1.25rem; margin-bottom: 1.5rem; line-height: 1.6;">
+                            <li>Navigate to: <a href="https://microsoft.com/devicelogin" target="_blank" style="color: #3b82f6; text-decoration: none; font-weight: 600;">microsoft.com/devicelogin</a></li>
+                            <li>Provide the verification code shown above.</li>
+                            <li>Log in to your Microsoft Account.</li>
+                        </ol>
+                        
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: #60a5fa; font-size: 0.85rem; margin-bottom: 1rem;" id="auth-spinner-container">
+                            <div class="status-dot" style="background-color: #3b82f6; box-shadow: 0 0 10px #3b82f6; width: 6px; height: 6px; animation: pulse 1.5s infinite;"></div>
+                            <span>Awaiting Microsoft authorization...</span>
+                        </div>
+                        <button class="btn btn-active" onclick="completeMsalLogin()" style="width: 100%; padding: 0.75rem; font-size: 0.9rem; font-weight: 600; background: #10b981; border-color: #10b981;">Verify & Continue</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="auth-error-message" style="display: none; margin-top: 1rem; color: #f87171; font-size: 0.85rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 8px;">
+                Error text here
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
