@@ -1,0 +1,2 @@
+AI Cyber Shield simulator demo data.
+Created so the Ransomware simulation can record a visible protection snapshot.
