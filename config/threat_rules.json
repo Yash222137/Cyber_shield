@@ -1,0 +1,19 @@
+{
+  "signatures": [
+    {
+      "name": "SQL Injection Signature",
+      "pattern": "UNION SELECT",
+      "severity": "High"
+    },
+    {
+      "name": "Malicious Shell Execution Attempt",
+      "pattern": "/bin/sh",
+      "severity": "Critical"
+    },
+    {
+      "name": "Failed Login Signature",
+      "pattern": "Failed login attempt",
+      "severity": "Low"
+    }
+  ]
+}

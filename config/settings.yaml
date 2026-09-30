@@ -1,0 +1,53 @@
+# AI Cyber Shield - Settings Configuration
+
+monitors:
+  network:
+    interval: 1.0
+    sniff_packets: false
+  process:
+    interval: 2.0
+    cpu_threshold: 80.0
+    ram_threshold: 80.0
+  file:
+    watch_path: "./monitored_directory"
+  log:
+    watch_file: "./logs/system_logs/auth.log"
+    interval: 5.0
+
+detection:
+  confidence_threshold: 0.75
+  model_dir: "./ai_models/trained_models"
+
+protection:
+  auto_protect: true
+  warning_threshold: 55
+  critical_threshold: 75
+  snapshot_cooldown_seconds: 60
+  guard_ports:
+    - 22
+    - 445
+    - 3389
+
+backup:
+  enabled: true
+  local_destination: "./protected_backup"
+  critical_paths:
+    - "./monitored_directory"
+  critical_extensions:
+    - ".doc"
+    - ".docx"
+    - ".xls"
+    - ".xlsx"
+    - ".pdf"
+    - ".txt"
+    - ".csv"
+    - ".json"
+    - ".yaml"
+    - ".yml"
+    - ".db"
+    - ".sqlite"
+  max_file_size_mb: 50
+
+server:
+  host: "127.0.0.1"
+  port: 8000

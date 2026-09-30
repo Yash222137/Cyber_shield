@@ -1,0 +1,25 @@
+{
+  "backup": {
+    "enabled": true,
+    "local_destination": "./protected_backup",
+    "retention_days": 7,
+    "critical_paths": [
+      "./monitored_directory"
+    ],
+    "critical_extensions": [
+      ".doc",
+      ".docx",
+      ".xls",
+      ".xlsx",
+      ".pdf",
+      ".txt",
+      ".csv",
+      ".json",
+      ".yaml",
+      ".yml",
+      ".db",
+      ".sqlite"
+    ],
+    "max_file_size_mb": 50
+  }
+}
